@@ -1,3 +1,4 @@
+#define GLEW_STATIC
 #include "includes/Window.h"
 #include <stdexcept>
 #include <iostream>

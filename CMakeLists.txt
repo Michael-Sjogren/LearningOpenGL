@@ -8,8 +8,9 @@ set(SRC src/Window.cpp)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
 
-set(LIBS glfw OpenGL)
+set(LIBS glfw OpenGL glew)
 
 
 add_executable(LearnOpenGL main.cpp ${SRC} ${INCLUDES})
