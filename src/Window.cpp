@@ -23,17 +23,30 @@ void Window::Init(const char *windowTitle, int width, int height)
 void Window::ShowWindow()
 {
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << " \n";
-    float verticies[6] = {
-       -0.5f, -0.5f,
-        0.0f,  0.5f,
-        0.5f, -0.5f };
+    float verticies[] = {
+        -0.5f, -0.5f,
+        0.5f,  -0.5f,
+        0.5f, 0.5f,
+        -0.5f,  0.5f,
+    };
+
+    uint32_t indices[] = {
+        0,1,2,
+        2,3,0
+    };
+    
     uint32_t bufferId;
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float) , &verticies ,  GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2 , GL_FLOAT, GL_FALSE , sizeof(float) * 2 , 0);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float) , &verticies ,  GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribPointer(0, 2 , GL_FLOAT, GL_FALSE , sizeof(float) * 2 , 0);
+    
+    unsigned int ibo;
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int) , &indices ,  GL_STATIC_DRAW);
+    
 
     auto shaderSrc = MyGraphics::ParseShader("../resources/shaders/Basic.shader");
     uint32_t program = MyGraphics::CreateShader(shaderSrc.VertexSource , shaderSrc.FragmentSource);
@@ -42,7 +55,7 @@ void Window::ShowWindow()
     {
         glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES , 0 , 3);
+        glDrawElements(GL_TRIANGLES , 6 , GL_UNSIGNED_INT, nullptr);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
