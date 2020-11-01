@@ -5,7 +5,7 @@
     #ifdef _MSC_VER
     #define ASSERT(x) if ((!x)) __debugbreak();
     #else
-    #define ASSERT(x) if ((!x)) assert(false);
+    #define ASSERT(x) if ((!x)) assert(x);
     #define GLCall(x) Window::GLClearError();\
         x;\
         ASSERT(Window::GLLogCall(#x, __FILE__, __LINE__))
@@ -29,6 +29,8 @@ void Window::Init(const char *windowTitle, int width, int height)
     {
         throw std::runtime_error("Failed to initalize glew");
     }
+
+    glfwSwapInterval(1);
 }
 
 void Window::ShowWindow()
@@ -62,10 +64,21 @@ void Window::ShowWindow()
     auto shaderSrc = MyGraphics::ParseShader("../resources/shaders/Basic.shader");
     uint32_t program = MyGraphics::CreateShader(shaderSrc.VertexSource , shaderSrc.FragmentSource);
     GLCall(glUseProgram(program));
+    int loc = glGetUniformLocation(program, "u_Color");
+    ASSERT(loc != -1);
+    float r = 0.0f;
+    float increment = 0.05f;
     while (!glfwWindowShouldClose(window))
     {
         GLCall(glClearColor(0.1f, 0.1f, 0.1f, 0.1f));
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
+        if(r > 1.0f){
+            increment = -increment;
+        }else if(r < 0.0f) {
+            increment = 0.05f;
+        }
+        r += increment;
+        GLCall(glUniform4f(loc , r , 0.5f , 0.3f , 1.0f ));
         GLCall(glDrawElements(GL_TRIANGLES , 6 , GL_UNSIGNED_INT, nullptr));
         glfwSwapBuffers(window);
         glfwPollEvents();
